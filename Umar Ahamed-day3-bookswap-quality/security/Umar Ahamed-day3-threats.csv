@@ -1,0 +1,10 @@
+Category,Severity,Finding,Mitigation Owner
+Authentication,High,Missing JWT protection on protected endpoints,Backend Team
+Authorization,High,BOLA on loan resource endpoints,Backend Team
+Injection,High,Potential SQL injection in search queries,Backend Team
+Secrets,Medium,Secrets stored outside Key Vault,DevOps Team
+Transport,High,HTTPS enforcement required,DevOps Team
+Rate Limiting,Medium,No login rate limiting,DevOps Team
+Rate Limiting,Medium,No listing creation throttling,DevOps Team
+PII,Medium,Member address visible in logs,Backend Team
+PII,Medium,JWT token exposure in telemetry,Backend Team

@@ -1,0 +1,40 @@
+meta {
+  name: 2 - Create book (valid)
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/books
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: fake.jwt.token
+}
+
+body:json {
+  {
+    "title": "Dune",
+    "author": "Frank Herbert",
+    "isbn": "9780441013593",
+    "condition": "Good"
+  }
+}
+
+vars:pre-request {
+  baseUrl: http://127.0.0.1:4010
+}
+
+assert {
+  res.status: eq 201
+}
+
+docs {
+  Expected status: 201
+}

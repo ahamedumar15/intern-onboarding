@@ -1,0 +1,476 @@
+openapi: 3.1.0
+
+info:
+  title: BookSwap API
+  version: 0.1.0
+  description: |
+    BookSwap is a community marketplace that allows members of a residential
+    building to list, search, lend, and borrow books. This API enables
+    authenticated members to manage book listings, borrow requests, and loans.
+
+servers:
+  - url: https://api.bookswap.local
+
+tags:
+  - name: Books
+  - name: Borrow Requests
+  - name: Loans
+
+paths:
+
+  /books:
+    get:
+      tags:
+        - Books
+      summary: List books in the building
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: search
+          in: query
+          description: Search by title, author, or ISBN
+          schema:
+            type: string
+
+        - name: condition
+          in: query
+          description: Filter by book condition
+          schema:
+            type: string
+            enum:
+              - New
+              - Good
+              - Fair
+              - Poor
+
+        - name: page
+          in: query
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+
+        - name: pageSize
+          in: query
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+
+      responses:
+        "200":
+          description: Page of books
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BookPage"
+
+        "401":
+          description: Missing or invalid token
+
+    post:
+      tags:
+        - Books
+      summary: List a new book
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateBookRequest"
+
+      responses:
+        "201":
+          description: Book successfully created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Book"
+
+        "400":
+          description: Invalid request payload
+
+        "401":
+          description: Missing or invalid token
+
+  /books/{bookId}:
+    get:
+      tags:
+        - Books
+      summary: Get a single book
+      parameters:
+        - $ref: "#/components/parameters/BookId"
+
+      responses:
+        "200":
+          description: Book details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Book"
+
+        "404":
+          description: Book not found
+
+  /books/{bookId}/borrow-requests:
+    post:
+      tags:
+        - Borrow Requests
+      summary: Request to borrow this book
+      security:
+        - bearerAuth: []
+
+      parameters:
+        - $ref: "#/components/parameters/BookId"
+
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateBorrowRequest"
+
+      responses:
+        "201":
+          description: Borrow request created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BorrowRequest"
+
+        "401":
+          description: Missing or invalid token
+
+        "404":
+          description: Book not found
+
+        "409":
+          description: Book is unavailable
+
+  /borrow-requests/{requestId}:
+    patch:
+      tags:
+        - Borrow Requests
+      summary: Accept or decline a borrow request
+
+      parameters:
+        - name: requestId
+          in: path
+          required: true
+          schema:
+            type: string
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateBorrowRequestStatus"
+
+      responses:
+        "200":
+          description: Request updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BorrowRequest"
+
+        "404":
+          description: Borrow request not found
+
+        "409":
+          description: Request already processed
+
+  /loans:
+    get:
+      tags:
+        - Loans
+      summary: List loans
+
+      parameters:
+        - name: page
+          in: query
+          required: true
+          schema:
+            type: integer
+            default: 1
+
+        - name: pageSize
+          in: query
+          required: true
+          schema:
+            type: integer
+            default: 20
+
+      responses:
+        "200":
+          description: Loan list
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoanPage"
+
+  /loans/{loanId}:
+    patch:
+      tags:
+        - Loans
+      summary: Mark a loan returned
+
+      parameters:
+        - name: loanId
+          in: path
+          required: true
+          schema:
+            type: string
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReturnLoanRequest"
+
+      responses:
+        "200":
+          description: Loan updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Loan"
+
+        "404":
+          description: Loan not found
+
+        "422":
+          description: Loan cannot be returned
+
+components:
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  parameters:
+    BookId:
+      name: bookId
+      in: path
+      required: true
+      schema:
+        type: string
+
+  schemas:
+
+    Book:
+      type: object
+      properties:
+        id:
+          type: string
+
+        title:
+          type: string
+
+        author:
+          type: string
+
+        isbn:
+          type: string
+
+        condition:
+          type: string
+          enum:
+            - New
+            - Good
+            - Fair
+            - Poor
+
+        photoUrl:
+          type: string
+          format: uri
+
+        availabilityStatus:
+          type: string
+          enum:
+            - Available
+            - Unavailable
+
+        ownerId:
+          type: string
+
+        createdAt:
+          type: string
+          format: date-time
+
+      required:
+        - id
+        - title
+        - author
+        - isbn
+        - condition
+        - availabilityStatus
+
+    CreateBookRequest:
+      type: object
+      properties:
+        title:
+          type: string
+
+        author:
+          type: string
+
+        isbn:
+          type: string
+
+        condition:
+          type: string
+
+        photoUrl:
+          type: string
+          format: uri
+
+      required:
+        - title
+        - author
+        - isbn
+        - condition
+
+    BorrowRequest:
+      type: object
+      properties:
+        id:
+          type: string
+
+        bookId:
+          type: string
+
+        borrowerId:
+          type: string
+
+        status:
+          type: string
+          enum:
+            - Pending
+            - Accepted
+            - Declined
+
+        requestedAt:
+          type: string
+          format: date-time
+
+      required:
+        - id
+        - bookId
+        - borrowerId
+        - status
+
+    CreateBorrowRequest:
+      type: object
+      properties:
+        message:
+          type: string
+          maxLength: 500
+
+    UpdateBorrowRequestStatus:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+            - Accepted
+            - Declined
+
+      required:
+        - status
+
+    Loan:
+      type: object
+      properties:
+        id:
+          type: string
+
+        bookId:
+          type: string
+
+        borrowerId:
+          type: string
+
+        startDate:
+          type: string
+          format: date
+
+        dueDate:
+          type: string
+          format: date
+
+        returnedDate:
+          type: string
+          format: date
+
+        status:
+          type: string
+          enum:
+            - Out
+            - Returned
+            - Overdue
+
+      required:
+        - id
+        - bookId
+        - borrowerId
+        - status
+
+    ReturnLoanRequest:
+      type: object
+      properties:
+        returned:
+          type: boolean
+
+      required:
+        - returned
+
+    Page:
+      type: object
+      properties:
+        page:
+          type: integer
+
+        pageSize:
+          type: integer
+
+        totalItems:
+          type: integer
+
+        totalPages:
+          type: integer
+
+      required:
+        - page
+        - pageSize
+        - totalItems
+        - totalPages
+
+    BookPage:
+      allOf:
+        - $ref: "#/components/schemas/Page"
+        - type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: "#/components/schemas/Book"
+
+    LoanPage:
+      allOf:
+        - $ref: "#/components/schemas/Page"
+        - type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: "#/components/schemas/Loan"

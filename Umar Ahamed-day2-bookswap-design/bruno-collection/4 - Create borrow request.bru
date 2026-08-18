@@ -1,0 +1,38 @@
+meta {
+  name: 4 - Create borrow request
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}/books/999/borrow-requests
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: fake.jwt.token
+}
+
+body:json {
+  {
+    "message": "Can I borrow this?"
+  }
+}
+
+vars:pre-request {
+  baseUrl: http://127.0.0.1:4010
+}
+
+assert {
+  res.status: eq 201
+}
+
+docs {
+  Expected status: 201 (borrower JWT sent as Bearer token).
+
+  Finding #2: bookId 999 does not exist, yet the mock still returns 201 instead of the
+  documented 404 "Book not found" — the spec declares the 404 but nothing ties it to
+  path-parameter validity, so it can only be produced by forcing `Prefer: code=404`, not
+  by sending a genuinely invalid id. See Finding #2 and Spec change #3 in the mock report.
+}

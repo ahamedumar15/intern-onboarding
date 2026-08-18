@@ -1,0 +1,32 @@
+meta {
+  name: 1 - List books
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/books?page=1&pageSize=20
+  body: none
+  auth: bearer
+}
+
+params:query {
+  page: 1
+  pageSize: 20
+}
+
+auth:bearer {
+  token: fake.jwt.token
+}
+
+vars:pre-request {
+  baseUrl: http://127.0.0.1:4010
+}
+
+assert {
+  res.status: eq 200
+}
+
+docs {
+  Expected status: 200
+}

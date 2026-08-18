@@ -1,0 +1,13 @@
+{
+  "name": "receipt-categoriser",
+  "version": "0.1.0",
+  "description": "GreenChit Receipt Categoriser — spec-driven reference implementation (Day 5)",
+  "type": "module",
+  "private": true,
+  "engines": {
+    "node": ">=22.18.0"
+  },
+  "scripts": {
+    "test": "node --test"
+  }
+}

@@ -1,0 +1,43 @@
+meta {
+  name: 3 - Create book (missing title)
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/books
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: fake.jwt.token
+}
+
+body:json {
+  {
+    "author": "Frank Herbert",
+    "isbn": "9780441013593",
+    "condition": "Good"
+  }
+}
+
+vars:pre-request {
+  baseUrl: http://127.0.0.1:4010
+}
+
+assert {
+  res.status: in [400, 422]
+}
+
+docs {
+  Expected status: 400 or 422 (title omitted from body).
+
+  Note: the response body is empty on the 400 — the spec's error responses (line 91-92 and
+  elsewhere) have only a `description`, no `content` schema, so there's no structured error
+  payload (code/message) to assert on. See Spec change #2 in the mock report.
+}

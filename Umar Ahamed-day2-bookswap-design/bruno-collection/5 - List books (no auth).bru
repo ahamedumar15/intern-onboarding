@@ -1,0 +1,35 @@
+meta {
+  name: 5 - List books (no auth)
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{baseUrl}}/books?page=1&pageSize=20
+  body: none
+  auth: none
+}
+
+params:query {
+  page: 1
+  pageSize: 20
+}
+
+vars:pre-request {
+  baseUrl: http://127.0.0.1:4010
+}
+
+assert {
+  res.status: eq 401
+}
+
+docs {
+  Expected status: 401.
+
+  Finding #1 (fixed): the spec originally had no `security` scheme, so Prism could not
+  enforce auth — this request used to return 200 instead of 401. After adding
+  `components.securitySchemes.bearerAuth` and `security: [{ bearerAuth: [] }]` to the
+  relevant operations (Spec change #1), Prism now genuinely rejects requests with no
+  `Authorization` header with a real 401, and this assertion passes without needing
+  `Prefer: code=401`.
+}

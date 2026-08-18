@@ -1,0 +1,171 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="BookSwap Enhanced Container Diagram">
+    <mxGraphModel dx="1800" dy="1200" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <!-- User -->
+        <mxCell id="user"
+          value="Member&#10;User Actor&#10;&#10;Browse Books&#10;Borrow Books&#10;List Books"
+          style="ellipse;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;"
+          vertex="1" parent="1">
+          <mxGeometry x="20" y="280" width="140" height="100" as="geometry"/>
+        </mxCell>
+
+        <!-- Mobile App -->
+        <mxCell id="mobile"
+          value="Mobile App&#10;React Native&#10;&#10;Responsibilities:&#10;• Browse Catalogue&#10;• List Books&#10;• Borrow Books&#10;• View Notifications"
+          style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;"
+          vertex="1" parent="1">
+          <mxGeometry x="250" y="240" width="220" height="160" as="geometry"/>
+        </mxCell>
+
+        <!-- Identity -->
+        <mxCell id="identity"
+          value="Identity Provider&#10;Microsoft Entra External ID&#10;&#10;Issues JWT Tokens&#10;Authenticates Members"
+          style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;"
+          vertex="1" parent="1">
+          <mxGeometry x="260" y="20" width="240" height="120" as="geometry"/>
+        </mxCell>
+
+        <!-- API -->
+        <mxCell id="api"
+          value="API Service&#10;Node.js Express&#10;Azure App Service&#10;&#10;Responsibilities:&#10;• Manage Books&#10;• Search Catalogue&#10;• Borrow Requests&#10;• Loan Tracking&#10;• Publish Notifications"
+          style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=12;"
+          vertex="1" parent="1">
+          <mxGeometry x="600" y="220" width="280" height="200" as="geometry"/>
+        </mxCell>
+
+        <!-- SQL -->
+        <mxCell id="sql"
+          value="Database&#10;Azure SQL&#10;System of Record&#10;&#10;Stores:&#10;• Members&#10;• Books&#10;• Borrow Requests&#10;• Loans&#10;• Notifications"
+          style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=12;"
+          vertex="1" parent="1">
+          <mxGeometry x="1050" y="20" width="260" height="180" as="geometry"/>
+        </mxCell>
+
+        <!-- Redis -->
+        <mxCell id="redis"
+          value="Cache&#10;Azure Cache for Redis&#10;&#10;Stores:&#10;• Search Results&#10;• Recent Books&#10;• Popular Books&#10;&#10;TTL: 2-10 min"
+          style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=12;"
+          vertex="1" parent="1">
+          <mxGeometry x="1050" y="260" width="260" height="170" as="geometry"/>
+        </mxCell>
+
+        <!-- Blob -->
+        <mxCell id="blob"
+          value="Object Store&#10;Azure Blob Storage&#10;&#10;Stores:&#10;• Book Photos&#10;• JPEG / PNG&#10;• Up to 5 MB"
+          style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;"
+          vertex="1" parent="1">
+          <mxGeometry x="1050" y="500" width="260" height="150" as="geometry"/>
+        </mxCell>
+
+        <!-- Service Bus -->
+        <mxCell id="queue"
+          value="Queue&#10;Azure Service Bus&#10;&#10;Messages:&#10;• Borrow Notifications&#10;• Weekly Digest Jobs&#10;&#10;Async Processing"
+          style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fad7ac;strokeColor=#b45f06;fontSize=12;"
+          vertex="1" parent="1">
+          <mxGeometry x="620" y="520" width="260" height="170" as="geometry"/>
+        </mxCell>
+
+        <!-- Worker -->
+        <mxCell id="worker"
+          value="Notification Worker&#10;Background Consumer&#10;&#10;Processes Queue Messages&#10;Retries Failed Jobs"
+          style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f4cccc;strokeColor=#cc0000;fontSize=12;"
+          vertex="1" parent="1">
+          <mxGeometry x="620" y="760" width="260" height="140" as="geometry"/>
+        </mxCell>
+
+        <!-- Email -->
+        <mxCell id="email"
+          value="Email Service&#10;Azure Communication Services&#10;&#10;Sends:&#10;• Weekly Digest&#10;• Borrow Alerts"
+          style="rounded=1;whiteSpace=wrap;html=1;fillColor=#cfe2f3;strokeColor=#3d85c6;fontSize=12;"
+          vertex="1" parent="1">
+          <mxGeometry x="1050" y="760" width="260" height="150" as="geometry"/>
+        </mxCell>
+
+        <!-- User to App -->
+        <mxCell id="e1"
+          value="Uses App"
+          edge="1" parent="1" source="user" target="mobile"
+          style="endArrow=block;html=1;">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- Auth -->
+        <mxCell id="e2"
+          value="HTTPS&#10;Authenticate User"
+          edge="1" parent="1" source="mobile" target="identity"
+          style="endArrow=block;html=1;">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- API -->
+        <mxCell id="e3"
+          value="HTTPS&#10;Search / List / Borrow Books"
+          edge="1" parent="1" source="mobile" target="api"
+          style="endArrow=block;html=1;strokeWidth=2;">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- SQL -->
+        <mxCell id="e4"
+          value="SQL&#10;Read &amp; Write Business Data"
+          edge="1" parent="1" source="api" target="sql"
+          style="endArrow=block;html=1;">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- Redis -->
+        <mxCell id="e5"
+          value="Redis&#10;Get / Set Cached Searches"
+          edge="1" parent="1" source="api" target="redis"
+          style="endArrow=block;html=1;">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- Blob -->
+        <mxCell id="e6"
+          value="HTTPS&#10;Store / Retrieve Photos"
+          edge="1" parent="1" source="api" target="blob"
+          style="endArrow=block;html=1;">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- API to Queue -->
+        <mxCell id="e7"
+          value="AMQP (Async)&#10;Publish Notifications &amp; Digest Jobs"
+          edge="1" parent="1" source="api" target="queue"
+          style="dashed=1;endArrow=block;html=1;strokeColor=#ff6600;strokeWidth=2;">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- Queue to Worker -->
+        <mxCell id="e8"
+          value="AMQP (Async)&#10;Consume Messages"
+          edge="1" parent="1" source="queue" target="worker"
+          style="dashed=1;endArrow=block;html=1;strokeColor=#ff6600;strokeWidth=2;">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- Worker to Email -->
+        <mxCell id="e9"
+          value="HTTPS&#10;Send Email"
+          edge="1" parent="1" source="worker" target="email"
+          style="endArrow=block;html=1;">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- Worker to SQL -->
+        <mxCell id="e10"
+          value="SQL&#10;Store Notification Records"
+          edge="1" parent="1" source="worker" target="sql"
+          style="endArrow=block;html=1;">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
